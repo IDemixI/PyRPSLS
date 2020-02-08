@@ -1,0 +1,141 @@
+Client side:
+
+We want all logic to be server-side to avoid anyone from cheating the game.
+We could build an API which listens out for:
+
+<Player>
+	<ID>123</ID>
+	<Name>Test<Name>
+	<Attack>Rock</Attack>
+</Player>
+
+<Game>
+	<ID>123</ID>
+	<Name>Game 1</Name>
+</Game>
+
+Rock
+Paper
+Scissors
+Lizard
+Spock
+
+Client loads main menu:
+
+Quick Game
+Create Game
+Join Game
+Options
+Achievements/Statistics
+Exit
+
+
+Quick Game:
+
+	Connects to listening port on server with status "QUICK" 
+	This kicks off the process server side to see if anyone
+	is hosting a public game with an open slot.
+	If they are not, the code for Create Game is kicked off
+	with defaults (Public, Standard Rules (Class?)
+	Player is told no games exists and game will begin when
+	another player joins.
+	
+Create Game:
+	
+	Opens new menu with settings:
+	
+	Game Name: Test Game 
+	Mode: (Classic RPS | RPSLS)
+	Rounds: (1 | 3 | 5 | 7 | Endless)
+	Round Time: (10 | 30 | 60)
+		
+	[Create] - connects to listen port on server with status "CREATE|Param1|Param2|Param3|Param4"
+	This generates a new game with these settings on a new socket and tells the player that the
+	game will begin when an opponent joins. Game given an ID so users can connect
+	[Quit to Menu] - Quits to menu
+	
+	Default: New Game #, RPSLS, 3 Rounds, 30 Seconds)
+	
+Join Game:
+	
+	"JOIN|ALL" Sent to Server listening port.
+	
+	A new menu will pop up with the following layout:
+
+	1. Manual Join (Prompt to Enter 4 digit game code/ID) ("JOIN|1234")
+	2. [Join Lobby]
+	3. [Return to Menu]
+	4. [Exit Game]
+	
+	
+	Test: hi there 
+	Test2: Hello
+	Test3: Messages will be here.
+	Test4: Messages will be here.
+	Test5: Messages will be here.
+	
+	1. Game Name # - Mode | Rounds | Round Time
+	2. Game Name # - Mode | Rounds | Round Time
+	3. Game Name # - Mode | Rounds | Round Time
+	4. Game Name # - Mode | Rounds | Round Time
+	5. Game Name # - Mode | Rounds | Round Time
+	6. Game Name # - Mode | Rounds | Round Time
+	7. Next Page
+	8. Previous Page
+	9. [Home menu]
+	0. [Exit Game]
+	
+	Page 3 of 8 
+	
+	When 1 is selected, user is asked to enter 4 digit code (maybe 3, maybe 6... depends how many users)
+	if code matches a game waiting on a player, the user sends a handshake to waiting game, if available, 
+	game sends back an okay. Server is dropped off menu (set to "playing") and then user who entered code 
+	"joins" the game.
+	
+	Join Lobby:
+	
+		If you select this, you will join the lobby. We will allocate 5 lines for the chat and 5 for games to join (1-5)
+	
+		5 items (1-5) are servers waiting for players. This list is popped into an array when "Join Game" is selected.
+		If more than 5 games are available, (returned to client via JSON string) '8' will be visible to go through pages, and if page
+		is > 1 then '7' is visible to go back to the last "page".
+		
+	Finally, pressing 9 will return to home menu. (0 to exit game)
+	
+Options:
+
+	Nickname: Test
+	DoB:
+	Gender:
+	Email: 
+	
+	1. [Save & Return to Menu]
+	2. [Return to Menu without Saving]
+	3. [Exit Game]
+	
+Achievements/Statistics:
+
+	Total Games Played: 24,690
+	Wins: 12,345
+	Losses: 12,345
+	Most Picked Attack: Rock
+	Most Beaten By: Spock
+	
+	1. [Reset All Achievements/Statistics] - Make sure confirmation displays
+	2. [Return to Menu]
+	3. [Exit Game]
+	
+
+Exit:
+	
+	Simply closes the client - will make a function/class called to do this. 
+	If at all possible, send a packet to server saying Disconnecting. If connected 
+	to an actual game and you leave it will inform the other player and make them 
+	the "game host" (hosting is always via the server anyway)
+	
+	
+Check to see if users connected - pop a packet to client every 5 seconds, looking for handshake response to determine if client is connected still.
+This check will occur if user is in a game, has created a game, or is in the "lobby" (joined via join game menu)
+
+	
+	
